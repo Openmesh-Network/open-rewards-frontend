@@ -138,7 +138,7 @@ export function Vesting({ contract }: { contract: Address }) {
       : undefined
 
   return (
-    <Card className="flex flex-col p-2 gap-y-1 max-w-xs grow">
+    <Card className="flex max-w-xs grow flex-col gap-y-1 p-2">
       <CardHeader className="gap-y-1">
         <CardTitle>{vestingManager.name}</CardTitle>
         <p className="w-full rounded-lg border bg-secondary px-3 py-1.5 text-center text-lg shadow-inner">

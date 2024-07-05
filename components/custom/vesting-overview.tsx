@@ -46,7 +46,7 @@ export function VestingOverview() {
   }
 
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="flex flex-wrap gap-2">
       {vestings.map((contract, i) => (
         <Vesting key={i} contract={contract} />
       ))}
