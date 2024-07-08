@@ -14,7 +14,7 @@ import { useAccount } from "wagmi"
 import { Button } from "@/components/ui/button"
 import { DataTable } from "@/components/ui/data-table"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { defaultChain } from "@/components/custom/web3-provider"
+import { chains } from "@/components/custom/web3-provider"
 
 export function VestingClaims() {
   const { address } = useAccount()
@@ -84,7 +84,7 @@ export function VestingClaims() {
         return (
           <Button asChild>
             <Link
-              href={`${defaultChain.blockExplorers.default.url}/tx/${row.original.transactionHash}`}
+              href={`${chains.find((c) => c.id === row.original.chainId)?.blockExplorers.default.url}/tx/${row.original.transactionHash}`}
               target="_blank"
             >
               View on explorer

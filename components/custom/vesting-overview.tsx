@@ -37,7 +37,9 @@ export function VestingOverview() {
         JSON.stringify(response.data),
         reviver
       ) as FilterEventsReturn
-      return events.map((event) => event.address)
+      return events.map((event) => {
+        return { contract: event.address, chainId: event.chainId }
+      })
     },
   })
 
@@ -47,8 +49,8 @@ export function VestingOverview() {
 
   return (
     <div className="flex flex-wrap gap-2">
-      {vestings.map((contract, i) => (
-        <Vesting key={i} contract={contract} />
+      {vestings.map((vesting, i) => (
+        <Vesting key={i} {...vesting} />
       ))}
     </div>
   )

@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
-import { defaultChain } from "@/components/custom/web3-provider"
 
 const vestingManagers = [
   {
@@ -53,9 +52,15 @@ const vestingManagers = [
   },
 ]
 
-export function Vesting({ contract }: { contract: Address }) {
+export function Vesting({
+  contract,
+  chainId,
+}: {
+  contract: Address
+  chainId: number
+}) {
   const { performTransaction, performingTransaction } = usePerformTransaction({
-    chainId: defaultChain.id,
+    chainId: chainId,
   })
   const queryClient = useQueryClient()
 
@@ -65,21 +70,25 @@ export function Vesting({ contract }: { contract: Address }) {
         abi: SingleBeneficiaryLinearERC20TransferVestingProxyContract.abi,
         address: contract,
         functionName: "amount",
+        chainId: chainId,
       },
       {
         abi: SingleBeneficiaryLinearERC20TransferVestingProxyContract.abi,
         address: contract,
         functionName: "start",
+        chainId: chainId,
       },
       {
         abi: SingleBeneficiaryLinearERC20TransferVestingProxyContract.abi,
         address: contract,
         functionName: "duration",
+        chainId: chainId,
       },
       {
         abi: SingleBeneficiaryLinearERC20TransferVestingProxyContract.abi,
         address: contract,
         functionName: "beneficiary",
+        chainId: chainId,
       },
     ],
     allowFailure: false,
@@ -94,6 +103,7 @@ export function Vesting({ contract }: { contract: Address }) {
         functionName: "getAddress",
         args: vestingInfo,
         ...manager.contract,
+        chainId: chainId,
       }
     }),
     allowFailure: false,
@@ -109,11 +119,13 @@ export function Vesting({ contract }: { contract: Address }) {
         abi: SingleBeneficiaryLinearERC20TransferVestingProxyContract.abi,
         address: contract,
         functionName: "released",
+        chainId: chainId,
       },
       {
         abi: SingleBeneficiaryLinearERC20TransferVestingProxyContract.abi,
         address: contract,
         functionName: "releasable",
+        chainId: chainId,
       },
     ],
     allowFailure: false,

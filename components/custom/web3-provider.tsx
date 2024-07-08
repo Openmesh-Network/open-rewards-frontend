@@ -4,12 +4,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createWeb3Modal } from "@web3modal/wagmi/react"
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config"
 import { cookieStorage, createStorage, WagmiProvider } from "wagmi"
-import { sepolia } from "wagmi/chains"
+import { mainnet, polygon, sepolia } from "wagmi/chains"
 
 import { siteConfig } from "@/config/site"
 
-export const chains = [sepolia] as const
-export const defaultChain = sepolia
+export const chains = [mainnet, polygon, sepolia] as const
+export const defaultChain = mainnet
 
 const appName = siteConfig.name
 const appDescription = siteConfig.description
@@ -38,6 +38,7 @@ const config = defaultWagmiConfig({
 createWeb3Modal({
   wagmiConfig: config,
   projectId,
+  themeMode: "light",
 })
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
