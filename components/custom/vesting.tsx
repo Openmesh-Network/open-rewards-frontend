@@ -21,21 +21,21 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 
 const vestingManagers = [
-  {
-    name: "Token Allocation",
-    contract: TokenAllocationVestingManagerContract,
-    release: async (
-      vestingContract: Address,
-      vestingInfo: [bigint, bigint, bigint, `0x${string}`]
-    ) => {
-      return {
-        abi: TokenAllocationVestingManagerContract.abi,
-        address: TokenAllocationVestingManagerContract.address,
-        functionName: "release",
-        args: vestingInfo,
-      }
-    },
-  },
+  // {
+  //   name: "Token Allocation",
+  //   contract: TokenAllocationVestingManagerContract,
+  //   release: async (
+  //     vestingContract: Address,
+  //     vestingInfo: [bigint, bigint, bigint, `0x${string}`]
+  //   ) => {
+  //     return {
+  //       abi: TokenAllocationVestingManagerContract.abi,
+  //       address: TokenAllocationVestingManagerContract.address,
+  //       functionName: "release",
+  //       args: vestingInfo,
+  //     }
+  //   },
+  // },
   {
     name: "DCI Sponsor",
     contract: DCIVestingManagerContract,
