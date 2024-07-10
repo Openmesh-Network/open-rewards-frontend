@@ -5,8 +5,8 @@ import { SingleBeneficiaryLinearERC20TransferVestingProxyContract } from "@/cont
 import { TokenAllocationVestingManagerContract } from "@/contracts/TokenAllocationVestingManager"
 import { useQueryClient } from "@tanstack/react-query"
 import { Clock } from "lucide-react"
-import { Address, formatUnits } from "viem"
-import { useReadContracts } from "wagmi"
+import { Address, formatUnits, parseAbi } from "viem"
+import { useReadContract, useReadContracts } from "wagmi"
 
 import { usePerformTransaction } from "@/hooks/usePerformTransaction"
 import { Button } from "@/components/ui/button"
@@ -21,27 +21,51 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 
 const vestingManagers = [
-  // {
-  //   name: "Token Allocation",
-  //   contract: TokenAllocationVestingManagerContract,
-  //   release: async (
-  //     vestingContract: Address,
-  //     vestingInfo: [bigint, bigint, bigint, `0x${string}`]
-  //   ) => {
-  //     return {
-  //       abi: TokenAllocationVestingManagerContract.abi,
-  //       address: TokenAllocationVestingManagerContract.address,
-  //       functionName: "release",
-  //       args: vestingInfo,
-  //     }
-  //   },
-  // },
+  {
+    name: "Token Allocation",
+    contract: TokenAllocationVestingManagerContract,
+    getAddress: (
+      vestingInfo: [bigint, bigint, bigint, `0x${string}`],
+      cliff: bigint | undefined
+    ) => {
+      return {
+        abi: TokenAllocationVestingManagerContract.abi,
+        address: TokenAllocationVestingManagerContract.address,
+        functionName: "getAddress",
+        args: [...vestingInfo, cliff],
+      }
+    },
+    release: (
+      vestingContract: Address,
+      vestingInfo: [bigint, bigint, bigint, `0x${string}`],
+      cliff: bigint | undefined
+    ) => {
+      return {
+        abi: TokenAllocationVestingManagerContract.abi,
+        address: TokenAllocationVestingManagerContract.address,
+        functionName: "release",
+        args: [...vestingInfo, cliff],
+      }
+    },
+  },
   {
     name: "DCI Sponsor",
     contract: DCIVestingManagerContract,
-    release: async (
+    getAddress: (
+      vestingInfo: [bigint, bigint, bigint, `0x${string}`],
+      cliff: bigint | undefined
+    ) => {
+      return {
+        abi: DCIVestingManagerContract.abi,
+        address: DCIVestingManagerContract.address,
+        functionName: "getAddress",
+        args: vestingInfo,
+      }
+    },
+    release: (
       vestingContract: Address,
-      vestingInfo: [bigint, bigint, bigint, `0x${string}`]
+      vestingInfo: [bigint, bigint, bigint, `0x${string}`],
+      cliff: bigint | undefined
     ) => {
       return {
         abi: SingleBeneficiaryLinearERC20TransferVestingProxyContract.abi,
@@ -97,16 +121,26 @@ export function Vesting({
     },
   })
 
+  const { data: cliff } = useReadContract({
+    abi: parseAbi(["function cliff() view returns (uint128)"]),
+    address: contract,
+    functionName: "cliff",
+    chainId: chainId,
+    query: {
+      staleTime: Infinity,
+    },
+  })
+
   const { data: vestingManagerAddresses } = useReadContracts({
-    contracts: vestingManagers.map((manager) => {
-      return {
-        functionName: "getAddress",
-        args: vestingInfo,
-        ...manager.contract,
-        chainId: chainId,
-      }
-    }),
-    allowFailure: false,
+    contracts: vestingInfo
+      ? vestingManagers.map((manager) => {
+          return {
+            ...manager.getAddress(vestingInfo, cliff),
+            chainId: chainId,
+          }
+        })
+      : [],
+    allowFailure: true,
     query: {
       staleTime: Infinity,
       enabled: !!vestingInfo,
@@ -133,7 +167,7 @@ export function Vesting({
 
   const vestingManagerIndex = vestingManagerAddresses?.findIndex(
     (vestingManagerAddress) =>
-      vestingManagerAddress?.toLowerCase() === contract.toLowerCase()
+      vestingManagerAddress.result?.toLowerCase() === contract.toLowerCase()
   )
   if (vestingManagerIndex === undefined || vestingManagerIndex === -1) {
     return <></>
@@ -170,6 +204,17 @@ export function Vesting({
             <div>
               <Label>Claimed ({claimedPercent.toFixed(2)}%)</Label>
               <Progress value={claimedPercent} max={100} />
+            </div>
+          )}
+
+          {cliff && currentDate < cliff && (
+            <div className="flex place-items-center gap-x-2 pt-1">
+              <Clock />
+              <Label>
+                Cliff in{" "}
+                {Math.round((Number(cliff) - currentDate) / (24 * 60 * 60))}{" "}
+                days
+              </Label>
             </div>
           )}
           <div className="flex place-items-center gap-x-2 pt-1">
@@ -210,7 +255,11 @@ export function Vesting({
                   return undefined
                 }
 
-                return vestingManager.release(contract, vestingInfo) as any
+                return vestingManager.release(
+                  contract,
+                  vestingInfo,
+                  cliff
+                ) as any
               },
               onConfirmed: (receipt) => {
                 releaseRefetch()
