@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "Openmesh Rewards",
-  description: "Claim all your OPEN rewards!",
+  name: "Openmesh Claiming",
+  description: "Claim your (s)OPEN!",
   mainNav: [],
   links: {
     openmesh: "https://openmesh.network/",

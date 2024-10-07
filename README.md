@@ -1,6 +1,6 @@
-## OPEN Rewards frontend
+## OPEN Claim frontend
 
-https://rewards.openmesh.network/
+https://claim.openmesh.network/
 
 Website interface to claim OPEN from various sources.
 
