@@ -49,7 +49,7 @@ const vestingManagers = [
     },
   },
   {
-    name: "DCI Sponsor",
+    name: "DCI/OEP Participant",
     contract: DCIVestingManagerContract,
     getAddress: (
       vestingInfo: [bigint, bigint, bigint, `0x${string}`],
