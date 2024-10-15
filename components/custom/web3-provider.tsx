@@ -13,8 +13,8 @@ export const defaultChain = mainnet
 
 const appName = siteConfig.name
 const appDescription = siteConfig.description
-const appIcon = "https://rewards.openmesh.network/icon.svg" as const
-const appUrl = "https://rewards.openmesh.network" as const
+const appIcon = "https://claim.openmesh.network/icon.svg" as const
+const appUrl = "https://claim.openmesh.network" as const
 const metadata = {
   name: appName,
   description: appDescription,
