@@ -27,7 +27,7 @@ export function VestingOverview() {
         },
       }
       const response = await axios.post(
-        "/vesting-indexer/filterEvents/",
+        "/vesting-indexer/filterEvents",
         JSON.parse(JSON.stringify(filter, replacer))
       )
       if (response.status !== 200) {
