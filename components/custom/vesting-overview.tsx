@@ -5,12 +5,12 @@ import { FilterEventsReturn } from "@/vesting-indexer/api/return-types"
 import { replacer, reviver } from "@/vesting-indexer/utils/json"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
-import { useAccount } from "wagmi"
 
-import { Vesting } from "./vesting"
+import { ReadOnlyVesting, Vesting } from "./vesting"
+import { useAddress } from "@/hooks/useAddress"
 
 export function VestingOverview() {
-  const { address } = useAccount()
+  const { address } = useAddress()
   const { data: vestings } = useQuery({
     initialData: [],
     queryKey: ["vestings", address],
@@ -45,6 +45,26 @@ export function VestingOverview() {
 
   if (!address) {
     return <span>Connect your wallet to see your vesting rewards.</span>
+  }
+
+  if (address === "0xD9779905870Df69FE6E8F149eC33afD44113e87A") {
+    return (
+      <div className="flex flex-wrap gap-2">
+        <ReadOnlyVesting amount={4_300_000} unlockedDate={new Date(2023, 3-1, 14)} unlockedPercent={100} claimedPercent={0} />
+        <ReadOnlyVesting amount={2_400_000} unlockedDate={new Date(2023, 3-1, 14)} unlockedPercent={100} claimedPercent={0} />
+        <ReadOnlyVesting amount={1_000_000} unlockedDate={new Date(2024, 2-1, 9)} unlockedPercent={100} claimedPercent={0} />
+        <ReadOnlyVesting amount={3_140_000} unlockedDate={new Date(2024, 6-1, 18)} unlockedPercent={100} claimedPercent={0} />
+        <ReadOnlyVesting amount={7_120_000} unlockedDate={new Date(2024, 7-1, 27)} unlockedPercent={100} claimedPercent={0} />
+      </div>
+    );
+  }
+
+  if (address === "0xa9BE414c38F1612DeADf39e4666fd741F5199D6C") {
+    return (
+      <div className="flex flex-wrap gap-2">
+        <ReadOnlyVesting amount={5_800_000} unlockedDate={new Date(2023, 3-1, 14)} unlockedPercent={100} claimedPercent={0} />
+      </div>
+    );
   }
 
   return (

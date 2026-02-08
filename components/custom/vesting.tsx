@@ -279,3 +279,38 @@ export function Vesting({
     </Card>
   )
 }
+
+export function ReadOnlyVesting({amount, ticker, unlockedPercent, claimedPercent, unlockedDate}: {amount: number, ticker?: string, unlockedPercent: number, claimedPercent: number, unlockedDate: Date}) {
+  return <Card className="flex max-w-xs grow flex-col gap-y-1 p-2">
+      <CardHeader className="gap-y-1">
+        <p className="w-full rounded-lg border bg-secondary px-3 py-1.5 text-center text-lg shadow-inner">
+          {amount.toFixed(2).toString()} {ticker ?? "sOPEN"}
+        </p>
+        <CardDescription className="flex flex-col gap-y-2">
+          <div>
+            <Label>Unlocked ({unlockedPercent.toFixed(2)}%)</Label>
+            <Progress value={unlockedPercent} max={100} />
+          </div>
+          <div>
+            <Label>Claimed ({claimedPercent.toFixed(2)}%)</Label>
+            <Progress value={claimedPercent} max={100} />
+          </div>
+
+          <div className="flex place-items-center gap-x-2 pt-1">
+            <Clock />
+            <Label>
+              Unlocked on {unlockedDate.toLocaleDateString()}
+            </Label>
+          </div>
+        </CardDescription>
+      </CardHeader>
+      <CardFooter>
+        <Button
+          className="w-full"
+          disabled
+        >
+          Claim
+        </Button>
+      </CardFooter>
+    </Card>
+}

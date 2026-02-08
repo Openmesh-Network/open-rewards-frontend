@@ -9,15 +9,15 @@ import { useQuery } from "@tanstack/react-query"
 import { ColumnDef } from "@tanstack/react-table"
 import axios from "axios"
 import { formatUnits } from "viem"
-import { useAccount } from "wagmi"
 
 import { Button } from "@/components/ui/button"
 import { DataTable } from "@/components/ui/data-table"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { chains } from "@/components/custom/web3-provider"
+import { useAddress } from "@/hooks/useAddress"
 
 export function VestingClaims() {
-  const { address } = useAccount()
+  const { address } = useAddress()
   const { data: claims } = useQuery({
     initialData: [],
     queryKey: ["claims", address],

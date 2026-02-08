@@ -1,6 +1,8 @@
 import { siteConfig } from "@/config/site"
 import { VestingClaims } from "@/components/custom/vesting-claims"
 import { VestingOverview } from "@/components/custom/vesting-overview"
+import { ReadonlyAddress } from "@/components/custom/readonly-address"
+import { Suspense } from "react"
 
 export default function IndexPage() {
   return (
@@ -14,9 +16,14 @@ export default function IndexPage() {
         </p>
       </div>
       <span className="text-lg font-semibold">Vesting Rewards</span>
-      <VestingOverview />
+      <Suspense><VestingOverview /></Suspense>
       <span className="text-lg font-semibold">Claim History</span>
-      <VestingClaims />
+      <Suspense><VestingClaims /></Suspense>
+      <div className="flex flex-col gap-2">
+        <span className="text-lg font-semibold">View Wallet</span>
+        <span className="text-sm text-muted-foreground">Readonly access to preview allocations granted to a wallet.</span>
+      </div>
+      <Suspense><ReadonlyAddress /></Suspense>
     </section>
   )
 }
