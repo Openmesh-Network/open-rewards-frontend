@@ -49,6 +49,8 @@ export function VestingOverview() {
 
   if (address === "0xD9779905870Df69FE6E8F149eC33afD44113e87A") {
     return (
+<div className="flex flex-col gap-4">
+  <span className="px-3 rounded-lg py-1 bg-green-600 text-white">Openmesh DAO Voting Member</span>
       <div className="flex flex-wrap gap-2">
         <ReadOnlyVesting amount={4_300_000} unlockedDate={new Date(2023, 3-1, 14)} unlockedPercent={100} claimedPercent={0} />
         <ReadOnlyVesting amount={2_400_000} unlockedDate={new Date(2023, 3-1, 14)} unlockedPercent={100} claimedPercent={0} />
@@ -56,6 +58,7 @@ export function VestingOverview() {
         <ReadOnlyVesting amount={3_140_000} unlockedDate={new Date(2024, 6-1, 18)} unlockedPercent={100} claimedPercent={0} />
         <ReadOnlyVesting amount={7_120_000} unlockedDate={new Date(2024, 7-1, 27)} unlockedPercent={100} claimedPercent={0} />
       </div>
+</div>
     );
   }
 
