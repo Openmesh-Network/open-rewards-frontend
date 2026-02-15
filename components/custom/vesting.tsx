@@ -6,7 +6,7 @@ import { TokenAllocationVestingManagerContract } from "@/contracts/TokenAllocati
 import { useQueryClient } from "@tanstack/react-query"
 import { Clock } from "lucide-react"
 import { Address, formatUnits, parseAbi } from "viem"
-import { useReadContract, useReadContracts } from "wagmi"
+import { useReadContract, useReadContracts, useSignMessage } from "wagmi"
 
 import { usePerformTransaction } from "@/hooks/usePerformTransaction"
 import { Button } from "@/components/ui/button"
@@ -19,6 +19,12 @@ import {
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
+import { useAddress } from "@/hooks/useAddress"
+import { Input } from "../ui/input"
+import { useState } from "react"
+import { useToast } from "../ui/use-toast"
+import { ApiClaim } from "@/app/api/claim/route"
 
 const vestingManagers = [
   {
@@ -281,6 +287,11 @@ export function Vesting({
 }
 
 export function ReadOnlyVesting({amount, ticker, unlockedPercent, claimedPercent, unlockedDate}: {amount: number, ticker?: string, unlockedPercent: number, claimedPercent: number, unlockedDate: Date}) {
+  const { address, readonly } = useAddress();
+  const [email, setEmail] = useState<string>("");
+  const { signMessageAsync } = useSignMessage();
+  const { toast } = useToast();
+
   return <Card className="flex max-w-xs grow flex-col gap-y-1 p-2">
       <CardHeader className="gap-y-1">
         <p className="w-full rounded-lg border bg-secondary px-3 py-1.5 text-center text-lg shadow-inner">
@@ -305,12 +316,64 @@ export function ReadOnlyVesting({amount, ticker, unlockedPercent, claimedPercent
         </CardDescription>
       </CardHeader>
       <CardFooter>
-        <Button
-          className="w-full"
-          disabled
-        >
-          Claim
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              className="w-full"
+              disabled={readonly}
+            >
+              {readonly ? "View Only" : "Claim"}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Claim</DialogTitle>
+              <DialogDescription>
+                Enter your email address to receive updates on your claim.
+              </DialogDescription>
+            </DialogHeader>
+            <div>
+              <div className="flex flex-col gap-1">
+                <Label>Email</Label>
+                <Input value={email} onChange={(e) => setEmail(e.target.value)}  />
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button
+                  onClick={() => {
+                    if (!address) {
+                      toast({ title: "Please reconnect your wallet.", variant: "info" })
+                      return;
+                    }
+
+                    const { dismiss } = toast({ title: "Sign claim in your wallet.", duration: Infinity, variant: "info" });
+                    const claim = {amount, ticker, unlockedPercent, claimedPercent, unlockedDate};
+                    const contact = {email};
+                    const message =  `${JSON.stringify(claim)}, ${JSON.stringify(contact)}, ${Math.round(Date.now()/1000)}`;
+                    signMessageAsync({ message }).then(async (signature) => {
+                      const content: ApiClaim = { claim, contact, proof: { address, signature, message } };
+                      await fetch("/api/claim", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ content: JSON.stringify(content) }),
+                      });
+                    }).then(() => {
+                      toast({ title: "Success!", description: "Claim will be processed in the next 3 business days.", variant: "success" })
+                    }).catch((err: any) => {
+                      toast({ title: err.shortMessage ?? err.message, variant: "destructive" })
+                    }).finally(() => {
+                      dismiss();
+                    })
+                  }}
+                  disabled={!email}
+                >
+                  Claim
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardFooter>
     </Card>
 }
